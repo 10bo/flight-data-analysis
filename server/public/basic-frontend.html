@@ -33,34 +33,53 @@
             >What proportion of the flights are business class?</span
           ><span class="answer"></span>
         </li>
+        <li id="question-5">
+          <span class="question">How many flights are there?</span
+          ><span class="answer"></span>
+        </li>
       </ul>
     </div>
 
     <script type="text/javascript">
-      const setQuestion2Answer = flights => {
-        let maxStopsFlight;
+      'use strict';
+
+      const setQuestion1Answer = flights => {
+        let maxStopsFlight = flights[0];
         flights.forEach(checkFlight => {
           if (
             checkFlight.segments &&
-            checkFlight.segments.length > maxStopsFlight.segments.count
+            checkFlight.segments.length > maxStopsFlight.segments.length
           ) {
             maxStopsFlight = checkFlight;
-            maxStopsCount = checkFlight.segments;
           }
         });
-        console.log(maxStopsFlight);
+
+        document
+          .getElementById('question-1')
+          .querySelector(
+            '.answer'
+          ).textContent = `Flight with ID ${maxStopsFlight.id} stops ${maxStopsFlight.segments.length} times.`;
       };
-      const setQuestion1Answer = flights => {};
+      const setQuestion2Answer = flights => {
+        let day;
+        let maxStopsCount = 0;
+
+        document
+          .getElementById('question-1')
+          .querySelector(
+            '.answer'
+          ).textContent = `${day} has the most number of flights departing from Manchester.`;
+      };
       const setQuestion3Answer = flights => {};
       const setQuestion4Answer = flights => {};
-      const request = fetch("http://localhost:3000/get-flight-data/", {
-        method: "GET"
+      const request = fetch('http://localhost:3000/get-flight-data/', {
+        method: 'GET'
       });
 
       request
         .then(response => {
           if (!response.ok) {
-            throw new Error("Could not fetch flights");
+            throw new Error('Could not fetch flights');
           }
           return response;
         })
@@ -70,6 +89,7 @@
           setQuestion2Answer(responseJson);
           setQuestion3Answer(responseJson);
           setQuestion4Answer(responseJson);
+          setQuestion5Answer(responseJson);
         });
     </script>
   </body>

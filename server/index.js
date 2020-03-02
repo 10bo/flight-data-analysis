@@ -5,6 +5,7 @@ const fs = require('fs');
 const jsdom = require('jsdom');
 const { JSDOM } = jsdom;
 const attributesToObject = require('./attributes-to-object').attributesToObject;
+const path = require('path');
 
 // Flight data
 const dom = new JSDOM(fs.readFileSync('./flighdata_A.xml'), {
@@ -37,6 +38,9 @@ for (let i = 0; i < xmlFlights.length; i++) {
   }
   flights.push(flight);
 }
+
+// Serve static files
+app.use(express.static('public'));
 
 // API endpoint
 app.get('/get-flight-data/', (req, res) => {
