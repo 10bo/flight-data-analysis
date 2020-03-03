@@ -61,17 +61,96 @@
           ).textContent = `Flight with ID ${maxStopsFlight.id} stops ${maxStopsFlight.segments.length} times.`;
       };
       const setQuestion2Answer = flights => {
-        let day;
-        let maxStopsCount = 0;
+        let days = [];
+        let count = 0;
+
+        flights.forEach(flight => {
+          if (flight.depair == 'MAN') {
+            let day = days.find(day => day.day == flight.outdepartdate);
+            if (!day) {
+              day = { day: flight.outdepartdate, count: 0 };
+              days.push(day);
+            }
+            day.count += 1;
+          }
+        });
+
+        let highestCountDay;
+        days.forEach(day => {
+          if (day.count >= (highestCountDay ? highestCountDay.count : 0)) {
+            highestCountDay = day;
+          }
+        });
 
         document
-          .getElementById('question-1')
+          .getElementById('question-2')
+          .querySelector('.answer').textContent = `${
+          highestCountDay ? highestCountDay.day : 'N/A'
+        } has the most number of flights departing from Manchester.`;
+      };
+      const setQuestion3Answer = flights => {
+        let days = [];
+        let count = 0;
+
+        flights.forEach(flight => {
+          let day = days.find(day => day.day == flight.outdepartdate);
+          if (!day) {
+            day = {
+              day: flight.outdepartdate,
+              flightNumbers: []
+            };
+            days.push(day);
+          }
+
+          if (day.flightNumbers.indexOf(flight.outflightno) === -1) {
+            day.flightNumbers.push(flight.outflightno);
+          }
+        });
+
+        let highestCountDay;
+        days.forEach(day => {
+          if (
+            day.flightNumbers.length >=
+            (highestCountDay ? highestCountDay.flightNumbers.length : 0)
+          ) {
+            highestCountDay = day;
+          }
+        });
+
+        document
+          .getElementById('question-3')
+          .querySelector('.answer').innerHTML = days
+          .map(
+            day =>
+              `<br>${day.day} has ${day.flightNumbers.length} unique departing flight numbers.`
+          )
+          .join('');
+      };
+      const setQuestion4Answer = flights => {
+        const flightsCount = flights.length;
+        const businessClassFlightCount =
+          flights.filter(
+            flight => flight.outflightclass.search(/business/i) !== -1
+          ).length +
+          flights.filter(
+            flight => flight.inflightclass.search(/business/i) !== -1
+          ).length;
+
+        document
+          .getElementById('question-4')
+          .querySelector('.answer').textContent = `${Math.round(
+          (businessClassFlightCount / flightsCount) * 100
+        )}% of departing/inbound flights are business class.`;
+      };
+      const setQuestion5Answer = flights => {
+        const flightsCount = flights.length;
+
+        document
+          .getElementById('question-5')
           .querySelector(
             '.answer'
-          ).textContent = `${day} has the most number of flights departing from Manchester.`;
+          ).textContent = `${flightsCount} flights found.`;
       };
-      const setQuestion3Answer = flights => {};
-      const setQuestion4Answer = flights => {};
       const request = fetch('http://localhost:3000/get-flight-data/', {
         method: 'GET'
       });
